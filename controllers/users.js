@@ -3,9 +3,22 @@ const  bcrypt  = require('bcryptjs');
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 
-const usersGet = (req = request, res = response) => {
+const usersGet = async (req = request, res = response) => {
+    const body = req.body;
+    const userFound = await User.findOne({ email: body.email });
+    if (!userFound){
+        res.status(500).json({
+            message: 'El usuario no existe.'
+        })
+    }
+    const matchPassword = await bcrypt.compare(body.password, userFound.password);
+    if (!matchPassword){
+        res.status(200).json({
+            message: 'La contraseña es incorrecta.'
+        })
+    } 
     res.status(200).json({
-        message: 'Get API'
+        message: 'Ingreso exitoso'
     })
 };
 const usersPost = async (req = request, res = response) => {
@@ -22,13 +35,11 @@ const usersPost = async (req = request, res = response) => {
                         ...body,
                         password: hash
                     })
-
                     // Create a token
                     const token = jwt.sign({ id: newUser._id }, process.env.SECRET, {
                         expiresIn: 86400, // 24 hours
                     });
                     newUser.save();
-                    delete newUser._doc.password;
                     res.status(201).json({
                         token: token,
                     })
