@@ -7,7 +7,7 @@ const usersGet = async (req = request, res = response) => {
     const body = req.body;
     const userFound = await User.findOne({ email: body.email });
     if (!userFound){
-        res.status(500).json({
+        return res.status(500).json({
             message: 'El usuario no existe.'
         })
     }
