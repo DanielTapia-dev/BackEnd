@@ -7,24 +7,13 @@ class Server {
         this.app = express();
         this.port = process.env.PORT;
         this.usersPath = '/api/users';
-
-
-        //Middlewares
         this.middlewares();
-        //Rutas de la aplicacion
-
         this.routes();
     }
 
     middlewares() {
-
-        //CORS AQUI SE CONFIGURAN LOS DOMINIOS DE WHITELIST
         this.app.use(cors());
-
-        //Lectura y parseo del body
         this.app.use(express.json());
-
-        //Directorio publico
         this.app.use(express.static('public'));
     }
 
